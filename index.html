@@ -223,13 +223,44 @@ $("#closeFeedback").onclick=()=>$("#feedbackOverlay").hidden=true;
 $("#feedbackOverlay").onclick=e=>{if(e.target.id==="feedbackOverlay")e.currentTarget.hidden=true};
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#feedbackOverlay").hidden=true});
 let db=null,docs={},draftT;
+// Shared online JSON document, same approach as the supplied Session 6 site.
+// This room is separate from Session 6. The service must permit cross-origin PUT/GET.
+const ROOM='ib10-novabrew-20261109-7c92e4b1';
+const SHARED_URL='https://blob.fyi/blob/'+ROOM;
+let syncBusy=false, lastSync=0;
+async function getShared(){
+ const r=await fetch(SHARED_URL,{cache:'no-store'});
+ if(r.status===404)return {groups:{}};
+ if(!r.ok)throw Error('Shared board unavailable (HTTP '+r.status+')');
+ const j=await r.json();return {groups:j&&typeof j.groups==='object'&&j.groups?j.groups:{}};
+}
+async function saveShared(p,group){
+ const key='g'+group;
+ for(let attempt=0;attempt<3;attempt++){
+  const data=await getShared();
+  data.groups[key]={...(data.groups[key]||{}),...p};
+  const r=await fetch(SHARED_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!r.ok)throw Error('Shared board rejected update (HTTP '+r.status+')');
+  const check=await getShared();
+  if(check.groups[key]&&check.groups[key].updated_at===p.updated_at){docs=check.groups;renderBoard();return;}
+ }
+ throw Error('Could not verify saved data. Please try again.');
+}
+async function refreshBoard(){
+ if(syncBusy)return;
+ syncBusy=true;
+ try{const data=await getShared();docs=data.groups;lastSync=Date.now();
+  $('#syncStatus').textContent='🟢 Live shared board · updates every 10 seconds';renderBoard();
+ }catch(e){$('#syncStatus').textContent='⚠️ Cannot connect to shared board: '+e.message;renderBoard();}
+ finally{syncBusy=false;}
+}
 const esc=x=>String(x==null?"":x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const progress=()=>Object.keys(S.pol).length+(S.cand?1:0)+(S.train.size||S.fam?1:0)+Object.keys(S.comp).filter(i=>S.comp[i]===CITEMS[+i][1]).length/4+(S.ret.size>=2?1:0);
 function safeUrl(u){try{const x=new URL(u);return ["https:","http:"].includes(x.protocol)?x.href:""}catch{return ""}}
 const draft=()=>({group_no:+$("#grp").value,team_name:$("#team").value.trim()||"Group "+$("#grp").value,progress:Math.round(progress()/7*100),budget_vnd:spent(),plan_text:plan(),updated_at:Date.now()});
-async function write(p){const r=db.collection("groups").doc("g"+$("#grp").value),x=await r.get();x.exists?await r.update(p):await r.set({submitted:false,slide_url:"",rationale:"",...p})}
+async function write(p,group=+$('#grp').value){await saveShared(p,group)}
 function renderBoard(){const st=$("#syncStatus");
- if(!db){st.textContent="⚪ Offline. Open the teacher’s shared link so all devices see the same board.";}
+ 
  const rows=[];for(let n=1;n<=6;n++)rows.push(docs["g"+n]||{group_no:n,none:true});
  rows.sort((a,b)=>(b.progress||0)-(a.progress||0)||(a.updated_at||0)-(b.updated_at||0));
  $("#boardRows").innerHTML=rows.map((r,i)=>{const p=r.progress||0,m=!r.none&&p>0?(["🥇","🥈","🥉"][i]||"#"+(i+1)):"·",u=safeUrl(r.slide_url);
@@ -238,14 +269,13 @@ $("#submitPlan").onclick=async()=>{const d=draft(),slide=safeUrl($("#slideUrl").
  if(!slide)return showFeedback("⚠️","Slide link required","Paste a shareable presentation URL before submitting.","warning");
  if(!why)return showFeedback("⚠️","Explain your choices","Add 1–2 sentences explaining the reasoning behind your plan.","warning");
  if(d.progress<100)return showFeedback("⚠️","Incomplete plan","Finish all four rounds first ("+d.progress+"% done). You can still revise your choices.","warning");
- if(!db)return showFeedback("⚠️","Board offline","Open the teacher’s shared link to submit.","warning");
- try{await write({...d,slide_url:slide,rationale:why,submitted:true});$("#cmsg").textContent="Submitted ✓";showFeedback("🏆","Group submitted!","Your plan and slide link are now visible to the whole class on the leaderboard.","success")}catch(e){showFeedback("⚠️","Submission failed","Ask your teacher to give your group edit access, then try again.","warning")}};
-function queueDraft(){clearTimeout(draftT);if(!db)return;draftT=setTimeout(()=>write(draft()).catch(()=>{}),700)}
+ 
+ try{await write({...d,slide_url:slide,rationale:why,submitted:true,updated_at:Date.now()});$("#cmsg").textContent="Submitted ✓";showFeedback("🏆","Group submitted!","Your plan and slide link are now visible to the whole class on the leaderboard.","success")}catch(e){showFeedback("⚠️","Submission failed","Could not save to the shared board. Check internet access or try again. Details: "+e.message,"warning")}};
+function queueDraft(){clearTimeout(draftT);draftT=setTimeout(()=>{const g=+$("#grp").value;write(draft(),g).catch(e=>{$("#syncStatus").textContent="⚠️ Autosave failed: "+e.message})},1200)}
 document.addEventListener("click",e=>{if(e.target.closest("[data-pr],[data-c],[data-m],[data-r]"))queueDraft()});
 document.addEventListener("change",e=>{if(e.target.closest("#comp select,#grp"))queueDraft()});
 $("#team").addEventListener("input",queueDraft);
-(async()=>{try{if(!window.claude)throw 0;db=await claude.use("db");if(!db)throw 0;
- db.collection("groups").onSnapshot(q=>{docs={};q.docs.forEach(d=>docs[d.id]=d.data());$("#syncStatus").textContent="🟢 Live · all devices on this link see the same board ("+q.size+"/6 groups started)";renderBoard()},()=>{$("#syncStatus").textContent="⚠️ Connection lost. Reload the page."})}catch(e){renderBoard()}})();
+refreshBoard();setInterval(refreshBoard,10000);
 $("#grp").addEventListener("change",()=>{$("#slideUrl").value="";$("#why").value=""});
 r1();r2();r3();r4();plan();paint();renderBoard();
 </script>
