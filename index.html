@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Session 10 · Global Assignment Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fffaf3;--card:#fff;--ink:#1f1b3a;--muted:#5b5780;--line:#ece4d6;--pink:#ff4d8d;--yellow:#ffc933;--teal:#18c3b0;--violet:#6c4cff;--orange:#ff8a3d;--shadow:0 6px 0 rgba(31,27,58,.9)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15122b;--card:#201c3d;--ink:#f6f2ff;--muted:#b8b2dd;--line:#352f61;--shadow:0 6px 0 rgba(0,0,0,.6)}}
+:root[data-theme="dark"]{--bg:#15122b;--card:#201c3d;--ink:#f6f2ff;--muted:#b8b2dd;--line:#352f61;--shadow:0 6px 0 rgba(0,0,0,.6)}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito',system-ui,sans-serif;line-height:1.6;overflow-x:hidden}
+h1,h2,h3{font-family:'Baloo 2','Nunito',system-ui,sans-serif;line-height:1.1;margin:0}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;display:flex;gap:6px;align-items:center;padding:10px 16px;background:var(--bg);border-bottom:2px solid var(--ink);overflow-x:auto;white-space:nowrap}
+nav b{font-family:'Baloo 2',sans-serif;font-size:1.1rem;margin-right:8px}
+nav a{color:var(--ink);text-decoration:none;font-weight:800;font-size:.85rem;padding:6px 12px;border-radius:99px;border:2px solid transparent}
+nav a:hover{border-color:var(--ink);background:var(--yellow);color:#1f1b3a}
+.pill{margin-left:auto;font-weight:800;font-size:.85rem;padding:6px 14px;border-radius:99px;border:2px solid var(--ink);background:var(--teal);color:#1f1b3a}
+.pill.warn{background:var(--pink);color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.hero{position:relative;overflow:hidden;padding:60px 20px 76px;text-align:center;background:linear-gradient(135deg,var(--violet),var(--pink) 60%,var(--orange));color:#fff}
+.hero .tag{display:inline-block;background:var(--yellow);color:#1f1b3a;font-weight:800;padding:6px 16px;border-radius:99px;border:2px solid #1f1b3a;transform:rotate(-2deg)}
+.hero h1{font-size:clamp(2.2rem,7vw,4.4rem);font-weight:800;margin:18px auto 12px;max-width:900px}
+.hero h1 span{background:#1f1b3a;padding:0 12px;border-radius:14px;display:inline-block;transform:rotate(1deg)}
+.hero p{max-width:640px;margin:0 auto 26px;font-size:1.12rem}
+.coin{position:absolute;font-size:4rem;opacity:.28;animation:float 6s ease-in-out infinite;user-select:none}
+@keyframes float{50%{transform:translateY(-22px) rotate(8deg)}}
+@media (prefers-reduced-motion:reduce){.coin,.pill.warn{animation:none}}
+.btn{display:inline-block;background:var(--yellow);color:#1f1b3a;font:800 1rem 'Nunito',sans-serif;text-decoration:none;padding:12px 26px;border-radius:99px;border:3px solid #1f1b3a;box-shadow:0 5px 0 #1f1b3a;transition:transform .15s;cursor:pointer}
+.btn:hover{transform:translateY(3px);box-shadow:0 2px 0 #1f1b3a}
+.btn.sm{padding:7px 16px;font-size:.9rem;box-shadow:0 3px 0 #1f1b3a}
+.btn.pink{background:var(--pink);color:#fff}.btn.teal{background:var(--teal)}
+section{max-width:1000px;margin:0 auto;padding:54px 18px 0}
+h2{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800;margin-bottom:6px}
+.sub{color:var(--muted);margin:0 0 22px}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:22px;box-shadow:var(--shadow);padding:22px}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.big{font-size:2.2rem}
+.round{border-top:8px solid var(--c)}
+.rt{display:inline-block;background:var(--c);color:#1f1b3a;font-weight:800;border:2px solid #1f1b3a;border-radius:99px;padding:2px 12px;font-size:.85rem}
+.note{background:var(--yellow);color:#1f1b3a;border-radius:14px;padding:10px 14px;font-weight:700;margin-top:12px}
+.fict{display:inline-block;background:var(--yellow);color:#1f1b3a;border:2px dashed #1f1b3a;border-radius:99px;padding:1px 10px;font-size:.8rem;font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.opt{font:800 .9rem 'Nunito',sans-serif;border:3px solid var(--ink);border-radius:99px;padding:6px 14px;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.opt.on{background:var(--teal);color:#1f1b3a}
+.opt.eth.on{background:var(--orange)}.opt.pol.on{background:var(--violet);color:#fff}.opt.geo.on{background:var(--teal)}
+.opt[disabled]{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.role{padding:14px 0;border-bottom:2px dashed var(--line)}.role:last-child{border:0}
+.hint{color:var(--muted);font-size:.9rem;font-weight:700;margin-top:6px;min-height:1.3em}
+.dots{letter-spacing:2px;color:var(--pink);font-weight:800}
+.dimrow{display:flex;justify-content:space-between;gap:8px;font-size:.9rem;font-weight:700}
+.candidate-portrait{width:100%;height:165px;display:block;object-fit:contain}.portrait-wrap{margin:-8px -8px 14px}.cand.sel{background:linear-gradient(160deg,var(--card),rgba(24,195,176,.3))}
+.flag{background:var(--pink);color:#fff;border-radius:12px;padding:8px 12px;font-weight:700;margin-top:8px}
+.good{background:var(--teal);color:#1f1b3a;border-radius:12px;padding:8px 12px;font-weight:700;margin-top:8px}
+.meter{height:18px;border:3px solid var(--ink);border-radius:99px;overflow:hidden;background:var(--bg);margin:10px 0}
+.meter i{display:block;height:100%;width:0;background:var(--pink);transition:width .25s}
+input[type=text],select{width:100%;font:600 1rem 'Nunito',sans-serif;padding:10px 14px;border-radius:14px;border:3px solid var(--ink);background:var(--bg);color:var(--ink)}
+label.f{font-weight:800;font-size:.9rem;display:grid;gap:4px}
+.plan{white-space:pre-wrap;font-weight:600;background:var(--bg);border:3px dashed var(--ink);border-radius:16px;padding:14px;margin-top:12px}
+.ok{color:#0c8f80;font-weight:800}
+footer{text-align:center;color:var(--muted);padding:50px 16px 40px;font-weight:700}
+textarea,input[type=url]{width:100%;font:600 1rem 'Nunito',sans-serif;padding:10px 14px;border-radius:14px;border:3px solid var(--ink);background:var(--bg);color:var(--ink)}.feedback-overlay{position:fixed;inset:0;z-index:1000;background:rgba(18,14,45,.78);display:flex;align-items:center;justify-content:center;padding:18px}.feedback-overlay[hidden]{display:none}.feedback-box{width:min(550px,100%);background:var(--card);color:var(--ink);border:5px solid var(--ink);border-radius:28px;padding:32px;text-align:center;box-shadow:0 14px 0 rgba(0,0,0,.3);animation:pop .2s ease-out}.feedback-box.warning{border-color:#ff4d8d}.feedback-box.success{border-color:#18c3b0}@keyframes pop{from{transform:scale(.83);opacity:0}to{transform:scale(1);opacity:1}}.leader-row{display:grid;grid-template-columns:65px 1fr auto;gap:10px;align-items:center;padding:13px 5px;border-bottom:2px dashed var(--line)}.leader-row:last-child{border:0}.progress-bar{height:9px;background:var(--line);border-radius:12px;overflow:hidden;margin-top:5px}.progress-bar span{display:block;height:100%;background:var(--teal)}.leader-row a{color:var(--violet);font-weight:800}details summary{cursor:pointer} .ch{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.chip{white-space:nowrap;flex:none}
+.avatar{height:110px;display:grid;place-items:center;font-size:4rem;border-radius:18px;color:#1f1b3a}.portrait-wrap{margin:0 0 12px}
+.how li{margin:4px 0}.live{font-weight:800}
+</style>
+</head>
+<body>
+<nav>
+<b>✈️ Session 10</b>
+<a href="#mission">Mission</a><a href="#r1">R1 Policy</a><a href="#r2">R2 Candidate</a><a href="#r3">R3 Prep</a><a href="#r4">R4 Support</a><a href="#plan">Submit</a><a href="#board">Leaderboard</a>
+<span class="pill" id="cd">⏱ 00:00</span>
+</nav>
+
+<header class="hero">
+<span class="coin" style="left:6%;top:14%">✈️</span><span class="coin" style="right:8%;top:10%;font-size:5rem;animation-delay:1s">🌏</span>
+<span class="coin" style="left:14%;bottom:8%;font-size:4.5rem;animation-delay:2s">🧳</span><span class="coin" style="right:16%;bottom:10%;animation-delay:.5s">☕</span>
+<span class="tag">International Business · Session 10</span>
+<h1>Global Assignment <span>Lab</span></h1>
+<p>You are the HR team. Choose who leads abroad, how to prepare them, and how to bring them home, then pitch your plan to the class.</p>
+<a class="btn" href="#mission">Start the mission 🚀</a>
+</header>
+
+<section id="mission">
+<h2>🎯 Mission</h2>
+<p class="sub">Group activity · about 30 minutes · one phone or laptop per group</p>
+<div class="card">
+<span class="fict">FICTIONAL CASE</span>
+<p><b>NovaBrew</b> is an imaginary Vietnamese specialty-coffee chain opening its first overseas hub in <b>Tokyo</b>. Your group is NovaBrew’s HR team. Make four decisions with evidence from Session 10, then present your plan in 2 minutes.</p>
+<div class="grid" style="margin-top:12px">
+<label class="f">Group<select id="grp"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+<label class="f">Team name<input type="text" id="team" maxlength="40" placeholder="e.g. Sakura HR Squad"></label>
+</div>
+</div>
+<div class="card how" style="margin-top:18px;border-left:8px solid var(--yellow)"><h3>How to play (read first)</h3><ol style="margin:8px 0 0;padding-left:20px"><li>Choose your <b>group number</b> and <b>team name</b> above.</li><li>Do the <b>4 rounds</b> in order. Every answer gives instant feedback; warnings are hints, not penalties.</li><li>Your bar on the <b>🏆 Leaderboard</b> moves as you finish rounds, so the whole class sees who is ahead.</li><li>At the end paste your <b>slide link</b> + 1–2 sentences of reasoning, then press <b>Submit</b>.</li></ol></div>
+<div class="grid" style="margin-top:18px">
+<div class="card" style="padding:16px"><div class="big">🧭</div><b>HR Director</b><br>Keeps the group on time and decides when debate stops.</div>
+<div class="card" style="padding:16px"><div class="big">🌸</div><b>Cultural Coach</b><br>Asks “what could go wrong in Japan?” in every round.</div>
+<div class="card" style="padding:16px"><div class="big">💴</div><b>Finance Lead</b><br>Watches the budget and the cost of mistakes.</div>
+<div class="card" style="padding:16px"><div class="big">🎤</div><b>Spokesperson</b><br>Presents the final plan to the class.</div>
+</div>
+</section>
+
+<section id="r1">
+<h2>🏛️ Round 1 · Staffing Policy</h2>
+<p class="sub">Who should fill each job? Ethnocentric = people from Vietnam HQ · Polycentric = locals hired in Japan · Geocentric = best person from anywhere.</p>
+<div class="card round" style="--c:var(--orange)">
+<div class="row"><span class="rt">Round 1 · Decide</span><button class="btn sm teal" data-t="5">⏱ Start 5:00</button></div>
+<div id="roles"></div>
+<div class="note">Defend each choice with one of: culture &amp; control · local market knowledge · cost · global talent development.</div>
+</div>
+</section>
+
+<section id="r2">
+<h2>🧑‍💼 Round 2 · Who Do We Send?</h2>
+<p class="sub">Choose the expatriate for the Tokyo GM role. Ratings 1–5 (more ● = stronger) use the four success predictors. Pick one person and read the risk check. No candidate is perfect.</p>
+<div class="row"><button class="btn sm teal" data-t="8">⏱ Start 8:00</button><span class="fict">FICTIONAL CANDIDATES</span></div>
+<div class="grid" id="cands" style="margin-top:14px"></div>
+<div class="card" id="risk" style="margin-top:18px"><span class="sub">Pick a candidate to see the risk check.</span></div>
+</section>
+
+<section id="r3">
+<h2>🎒 Round 3 · Prepare Them</h2>
+<p class="sub">You have a <b>60 triệu ₫</b> training budget. Tip: buy training that fixes the risks you saw in Round 2.</p>
+<div class="card round" style="--c:var(--teal)">
+<div class="row"><span class="rt">Round 3 · Budget</span><button class="btn sm teal" data-t="8">⏱ Start 8:00</button></div>
+<div id="train" class="grid" style="margin-top:12px"></div>
+<div class="meter"><i id="bud"></i></div>
+<div class="row"><b id="spent">0 / 60 triệu</b></div>
+<div class="hint" id="trainMsg"></div>
+</div>
+</section>
+
+<section id="r4">
+<h2>💼 Round 4 · Pay &amp; Coming Home</h2>
+<p class="sub">Match each need to the right part of the compensation package, then plan the return.</p>
+<div class="card round" style="--c:var(--pink)">
+<div class="row"><span class="rt">Round 4 · Match</span><button class="btn sm teal" data-t="5">⏱ Start 5:00</button></div>
+<div id="comp"></div>
+<h3 style="margin-top:18px">Return plan <small class="sub" style="font-size:.9rem">(choose at least 2)</small></h3>
+<div class="chips" id="ret"></div>
+<div class="hint" id="retMsg"></div>
+</div>
+</section>
+
+<section id="plan">
+<h2>📋 Your Group Plan</h2>
+<p class="sub">Review your choices, submit your slide link, and compare progress with other groups.</p>
+<div class="card">
+<div class="plan" id="planTxt"></div>
+<div class="grid" style="margin-top:16px"><label class="f">Presentation slide link (Google Slides, Canva or PowerPoint online)<input id="slideUrl" type="url" placeholder="https://..."></label><label class="f">Why is your plan suitable? (1–2 sentences)<textarea id="why" rows="3" placeholder="Explain the key trade-off..."></textarea></label></div><div class="row" style="margin-top:14px"><button class="btn pink" id="submitPlan">🚀 Submit group plan</button><span id="cmsg" class="ok"></span></div>
+</div>
+<div class="grid" style="margin-top:18px">
+<div class="card" style="border-left:8px solid var(--teal)"><h3>Present (2 min)</h3><p>Which decision was hardest? What risk worries you most? What would you do differently if the host country were Brazil?</p></div>
+<div class="card" style="border-left:8px solid var(--pink)"><h3>Debrief</h3><p>Compare plans across groups. Where did groups disagree, and which evidence from the lesson supports each view?</p></div>
+</div>
+</section>
+<section id="board"><h2>🏆 Class Leaderboard</h2><p class="sub">Live progress updates automatically while groups play. Slide links appear after submission.</p><div class="card"><div id="syncStatus" class="hint"></div><div id="boardRows"></div></div></section><div id="feedbackOverlay" class="feedback-overlay" role="dialog" aria-modal="true" aria-live="polite" hidden><div class="feedback-box"><div id="feedbackIcon" style="font-size:3rem"></div><h2 id="feedbackTitle"></h2><p id="feedbackText"></p><button class="btn" id="closeFeedback">Continue →</button></div></div><footer>International Business · Session 10 · Global HRM · NovaBrew and all candidates are fictional.</footer>
+
+<script>
+const $=s=>document.querySelector(s);
+const POL={eth:"Ethnocentric (HQ staff)",pol:"Polycentric (local staff)",geo:"Geocentric (best anywhere)"};
+const HINT={eth:"Control and culture transfer ↔ resentment and cultural myopia",pol:"Local know-how and lower cost ↔ limited career mobility, HQ gap",geo:"Best talent and global network ↔ costly, immigration limits"};
+const ROLES=[["gm","Tokyo country GM (first 12 months)"],["store","Store managers for the first stores"],["hq","Asia-Pacific HQ director (based in Hanoi)"]];
+const DIMS=[["self","Self-orientation","may doubt their abilities and feel overwhelmed"],["oth","Others-orientation","may struggle to build relationships with host-country nationals"],["per","Perceptual ability","may misread non-verbal cues and local behavior"],["tou","Cultural toughness","may resist local customs and avoid the local community"]];
+const CANDS=[
+{id:"A",n:"Minh",e:"⚡",h:"Operations star",s:{self:4,oth:2,per:2,tou:3},f:["Top performer in Vietnam","Basic English, no Japanese","Single, ready to move fast","Never lived abroad"],fam:""},
+{id:"B",n:"Hà",e:"🤝",h:"People-first leader",s:{self:3,oth:5,per:5,tou:3},f:["Great at mentoring teams","Studied abroad for a year","Beginner Japanese","Partner worried about finding work; two school-age children"],fam:"Family concern: partner’s career and children’s schooling"},
+{id:"C",n:"Khoa",e:"🌱",h:"Bicultural rising talent",s:{self:5,oth:3,per:3,tou:5},f:["Grew up in a bicultural family","Fluent in Japanese","Only 2 years of management experience","Family fully supportive"],fam:""}];
+const METH=[["env","Environmental briefings",3000000,"Housing, health care, schools, climate"],["ori","Cultural orientations",6000000,"Social, political, legal, economic institutions"],["ass","Cultural assimilation",9000000,"Values, manners, customs, basic phrases"],["sen","Sensitivity training",12000000,"Understand feelings, get “under the skin”"],["lan","Language training",15000000,"Get “into the mind” of local people"],["fie","Field experience",18000000,"Visit and mingle with the local culture"]];
+const COMPS=["Base salary","Foreign service premium","Various allowances","Tax differentials","Benefits"];
+const CITEMS=[["Extra pay as an incentive to accept the posting","Foreign service premium"],["The company covers income tax owed to both countries","Tax differentials"],["Housing, cost of living and children’s international school","Various allowances"],["Same medical and pension level as at home","Benefits"]];
+const RETS=["Home-culture reorientation program","Career-counseling sessions","Career-development plan","A defined role waiting on return"];
+const BUDGET=60000000,FAMCOST=9000000;
+const vnd=n=>(n/1e6).toLocaleString("vi-VN")+" triệu";
+const S={pol:{},cand:"",train:new Set(),fam:false,comp:{},ret:new Set()};
+
+/* timer */
+let tmr=null,left=0;
+function paint(){const m=String(Math.floor(left/60)).padStart(2,"0"),s=String(left%60).padStart(2,"0");$("#cd").textContent="⏱ "+m+":"+s;$("#cd").classList.toggle("warn",left>0&&left<=30)}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;clearInterval(tmr);left=+b.dataset.t*60;paint();tmr=setInterval(()=>{left--;paint();if(left<=0){clearInterval(tmr);$("#cd").textContent="⏱ Time’s up!"}},1000)});
+
+/* R1 */
+function r1(){$("#roles").innerHTML=ROLES.map(r=>`<div class="role"><b>${r[1]}</b><div class="chips">${["eth","pol","geo"].map(k=>`<button class="opt ${k} ${S.pol[r[0]]===k?"on":""}" data-pr="${r[0]}" data-k="${k}">${POL[k]}</button>`).join("")}</div><div class="hint">${S.pol[r[0]]?HINT[S.pol[r[0]]]:""}</div></div>`).join("")}
+$("#roles").addEventListener("click",e=>{const b=e.target.closest("[data-pr]");if(!b)return;S.pol[b.dataset.pr]=b.dataset.k;r1();plan();showFeedback("💡","Trade-off to defend",HINT[b.dataset.k],"warning")});
+
+/* R2 */
+function portrait(id){const P={A:["⚡","#ffe0b9"],B:["🤝","#f9d9e9"],C:["🌱","#d8f7ef"]}[id];return `<div class="avatar" style="background:${P[1]}">${P[0]}</div>`}
+const dots=n=>"●".repeat(n)+"○".repeat(5-n);
+function r2(){$("#cands").innerHTML=CANDS.map(c=>`<div class="card cand ${S.cand===c.id?"sel":""}"><div class="portrait-wrap">${portrait(c.id)}</div><h3>${c.n} · ${c.h}</h3><ul style="padding-left:18px;margin:8px 0">${c.f.map(x=>`<li>${x}</li>`).join("")}</ul>${DIMS.map(d=>`<div class="dimrow"><span>${d[1]}</span><span class="dots">${dots(c.s[d[0]])}</span></div>`).join("")}<div style="margin-top:12px"><button class="btn sm ${S.cand===c.id?"pink":""}" data-c="${c.id}">${S.cand===c.id?"Selected ✓":"Choose "+c.n}</button></div></div>`).join("");
+ const c=CANDS.find(x=>x.id===S.cand);if(!c){$("#risk").innerHTML='<span class="sub">Pick a candidate to see the risk check.</span>';return}
+ const fl=DIMS.filter(d=>c.s[d[0]]<=3).sort((a,b)=>c.s[a[0]]-c.s[b[0]]);
+ $("#risk").innerHTML=`<h3>Risk check for ${c.n}</h3>`+(fl.length?fl.map(d=>`<div class="flag">⚠️ ${d[1]} (${c.s[d[0]]}/5): may ${d[2].replace(/^may /,"")}</div>`).join(""):'<div class="good">No dimension below 4. Still plan support.</div>')+(c.fam?`<div class="flag">⚠️ ${c.fam}</div>`:"")+'<div class="note">No perfect candidate exists. Tell the class how Round 3 will reduce these risks. Expatriate failure may be costly; discuss the financial and non-financial risks.</div>'}
+$("#cands").addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(!b)return;S.cand=b.dataset.c;r2();plan();const c=CANDS.find(x=>x.id===S.cand);const weak=DIMS.filter(d=>c.s[d[0]]<=3).map(d=>d[1]);showFeedback(weak.length?"⚠️":"🌟",weak.length?"Risk alert":"Strong profile",weak.length?`${c.n}: review ${weak.join(", ")}. Explain how training reduces these risks.`:`${c.n} has strong scores across the four dimensions. Still justify the choice.`,weak.length?"warning":"success")});
+
+/* R3 */
+const spent=()=>[...S.train].reduce((a,k)=>a+METH.find(m=>m[0]===k)[2],0)+(S.fam?FAMCOST:0);
+function r3(){const sp=spent();
+ $("#train").innerHTML=METH.map(m=>{const on=S.train.has(m[0]);return `<div class="card" style="padding:14px"><div class="ch"><b>${m[1]}</b><span class="chip" style="border:2px solid var(--ink);border-radius:99px;padding:0 8px;font-weight:800">${vnd(m[2])}</span></div><div class="hint">${m[3]}</div><button class="opt ${on?"on":""}" data-m="${m[0]}" ${!on&&sp+m[2]>BUDGET?"disabled":""}>${on?"Included ✓":"Add"}</button></div>`}).join("")+`<div class="card" style="padding:14px"><div class="ch"><b>Spouse &amp; children training</b><span class="chip" style="border:2px solid var(--ink);border-radius:99px;padding:0 8px;font-weight:800">${vnd(FAMCOST)}</span></div><div class="hint">Families need cultural training too</div><button class="opt ${S.fam?"on":""}" data-m="fam" ${!S.fam&&sp+FAMCOST>BUDGET?"disabled":""}>${S.fam?"Included ✓":"Add"}</button></div>`;
+ $("#bud").style.width=Math.min(100,sp/BUDGET*100)+"%";$("#spent").textContent=vnd(sp)+" / "+vnd(BUDGET);
+ let msg="";if(S.train.size===0)msg="Pick at least one method.";else if(!S.train.has("lan"))msg="No language training: relying on English can limit interaction with host-country nationals.";else if(!S.fam)msg="Strong on language. What about the family?";else msg="Nice mix: individual and family covered.";
+ $("#trainMsg").textContent=msg}
+$("#train").addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(!b||b.disabled)return;const k=b.dataset.m;if(k==="fam")S.fam=!S.fam;else S.train.has(k)?S.train.delete(k):S.train.add(k);r3();plan();showFeedback(spent()>BUDGET*.85?"⚠️":"💰",spent()>BUDGET*.85?"Budget almost used":"Budget updated",`Training selected: ${vnd(spent())} of ${vnd(BUDGET)}. Estimates are illustrative, not supplier quotes.`,spent()>BUDGET*.85?"warning":"success")});
+
+/* R4 */
+function r4(){$("#comp").innerHTML=CITEMS.map((it,i)=>{const v=S.comp[i];return `<div class="role"><b>${it[0]}</b><select data-i="${i}"><option value="">Choose component…</option>${COMPS.map(c=>`<option ${v===c?"selected":""}>${c}</option>`).join("")}</select><div class="hint">${v?(v===it[1]?'<span class="ok">✓ Correct</span>':"Not quite. Think again."):""}</div></div>`}).join("");
+ $("#ret").innerHTML=RETS.map(r=>`<button class="opt ${S.ret.has(r)?"on":""}" data-r="${r}">${r}</button>`).join("");
+ $("#retMsg").textContent=S.ret.size>=2?"Good: returning managers may face reverse culture shock, so plan for it.":"Choose at least 2 return measures."}
+$("#comp").addEventListener("change",e=>{const s=e.target.closest("select");if(!s)return;S.comp[s.dataset.i]=s.value;r4();plan();if(s.value)showFeedback(s.value===CITEMS[+s.dataset.i][1]?"🎉":"⚠️",s.value===CITEMS[+s.dataset.i][1]?"Correct match!":"Try again",s.value===CITEMS[+s.dataset.i][1]?"Great! You identified the right compensation component.":"This component does not match the scenario. Reconsider the employee need.",s.value===CITEMS[+s.dataset.i][1]?"success":"warning")});
+$("#ret").addEventListener("click",e=>{const b=e.target.closest("[data-r]");if(!b)return;const k=b.dataset.r;S.ret.has(k)?S.ret.delete(k):S.ret.add(k);r4();plan()});
+
+/* plan */
+function plan(){const c=CANDS.find(x=>x.id===S.cand);
+ const L=["GROUP "+$("#grp").value+" · "+($("#team").value||"(team name)"),"NovaBrew Tokyo Assignment Plan (fictional case)","","1) Staffing policy",...ROLES.map(r=>"   • "+r[1]+": "+(S.pol[r[0]]?POL[S.pol[r[0]]]:"—")),"","2) Expatriate: "+(c?c.n+" ("+c.h+")":"—"),"","3) Preparation ("+vnd(spent())+" / "+vnd(BUDGET)+"): "+([...S.train].map(k=>METH.find(m=>m[0]===k)[1]).concat(S.fam?["Family training"]:[]).join(", ")||"—"),"","4) Pay matches: "+CITEMS.map((it,i)=>S.comp[i]===it[1]?"✓":"✗").join(" ")+"   Return plan: "+([...S.ret].join("; ")||"—")];
+ $("#planTxt").textContent=L.join("\n");return L.join("\n")}
+$("#grp").onchange=plan;$("#team").oninput=plan;
+function showFeedback(icon,title,message,type){$("#feedbackIcon").textContent=icon;$("#feedbackTitle").textContent=title;$("#feedbackText").textContent=message;$(".feedback-box").className="feedback-box "+type;$("#feedbackOverlay").hidden=false;$("#closeFeedback").focus()}
+$("#closeFeedback").onclick=()=>$("#feedbackOverlay").hidden=true;
+$("#feedbackOverlay").onclick=e=>{if(e.target.id==="feedbackOverlay")e.currentTarget.hidden=true};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#feedbackOverlay").hidden=true});
+let db=null,docs={},draftT;
+const esc=x=>String(x==null?"":x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const progress=()=>Object.keys(S.pol).length+(S.cand?1:0)+(S.train.size||S.fam?1:0)+Object.keys(S.comp).filter(i=>S.comp[i]===CITEMS[+i][1]).length/4+(S.ret.size>=2?1:0);
+function safeUrl(u){try{const x=new URL(u);return ["https:","http:"].includes(x.protocol)?x.href:""}catch{return ""}}
+const draft=()=>({group_no:+$("#grp").value,team_name:$("#team").value.trim()||"Group "+$("#grp").value,progress:Math.round(progress()/7*100),budget_vnd:spent(),plan_text:plan(),updated_at:Date.now()});
+async function write(p){const r=db.collection("groups").doc("g"+$("#grp").value),x=await r.get();x.exists?await r.update(p):await r.set({submitted:false,slide_url:"",rationale:"",...p})}
+function renderBoard(){const st=$("#syncStatus");
+ if(!db){st.textContent="⚪ Offline. Open the teacher’s shared link so all devices see the same board.";}
+ const rows=[];for(let n=1;n<=6;n++)rows.push(docs["g"+n]||{group_no:n,none:true});
+ rows.sort((a,b)=>(b.progress||0)-(a.progress||0)||(a.updated_at||0)-(b.updated_at||0));
+ $("#boardRows").innerHTML=rows.map((r,i)=>{const p=r.progress||0,m=!r.none&&p>0?(["🥇","🥈","🥉"][i]||"#"+(i+1)):"·",u=safeUrl(r.slide_url);
+  return `<div class="leader-row"><b style="font-size:1.5rem">${m}</b><div><b>Group ${r.group_no}${r.none?"":" · "+esc(r.team_name)}</b> <small>${r.none?"Not started":r.submitted?"✅ Submitted":"⏳ Working…"}</small><div class="progress-bar"><span style="width:${p}%"></span></div></div><div style="text-align:right"><b>${p}%</b>${u?`<br><a href="${esc(u)}" target="_blank" rel="noopener noreferrer">View slides</a>`:""}</div></div>`}).join("")}
+$("#submitPlan").onclick=async()=>{const d=draft(),slide=safeUrl($("#slideUrl").value.trim()),why=$("#why").value.trim();
+ if(!slide)return showFeedback("⚠️","Slide link required","Paste a shareable presentation URL before submitting.","warning");
+ if(!why)return showFeedback("⚠️","Explain your choices","Add 1–2 sentences explaining the reasoning behind your plan.","warning");
+ if(d.progress<100)return showFeedback("⚠️","Incomplete plan","Finish all four rounds first ("+d.progress+"% done). You can still revise your choices.","warning");
+ if(!db)return showFeedback("⚠️","Board offline","Open the teacher’s shared link to submit.","warning");
+ try{await write({...d,slide_url:slide,rationale:why,submitted:true});$("#cmsg").textContent="Submitted ✓";showFeedback("🏆","Group submitted!","Your plan and slide link are now visible to the whole class on the leaderboard.","success")}catch(e){showFeedback("⚠️","Submission failed","Ask your teacher to give your group edit access, then try again.","warning")}};
+function queueDraft(){clearTimeout(draftT);if(!db)return;draftT=setTimeout(()=>write(draft()).catch(()=>{}),700)}
+document.addEventListener("click",e=>{if(e.target.closest("[data-pr],[data-c],[data-m],[data-r]"))queueDraft()});
+document.addEventListener("change",e=>{if(e.target.closest("#comp select,#grp"))queueDraft()});
+$("#team").addEventListener("input",queueDraft);
+(async()=>{try{if(!window.claude)throw 0;db=await claude.use("db");if(!db)throw 0;
+ db.collection("groups").onSnapshot(q=>{docs={};q.docs.forEach(d=>docs[d.id]=d.data());$("#syncStatus").textContent="🟢 Live · all devices on this link see the same board ("+q.size+"/6 groups started)";renderBoard()},()=>{$("#syncStatus").textContent="⚠️ Connection lost. Reload the page."})}catch(e){renderBoard()}})();
+$("#grp").addEventListener("change",()=>{$("#slideUrl").value="";$("#why").value=""});
+r1();r2();r3();r4();plan();paint();renderBoard();
+</script>
+</body>
+</html>
